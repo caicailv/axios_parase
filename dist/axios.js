@@ -341,11 +341,11 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var utils = __webpack_require__(/*! ./utils */ "./lib/utils.js");
-var bind = __webpack_require__(/*! ./helpers/bind */ "./lib/helpers/bind.js");
-var Axios = __webpack_require__(/*! ./core/Axios */ "./lib/core/Axios.js");
-var mergeConfig = __webpack_require__(/*! ./core/mergeConfig */ "./lib/core/mergeConfig.js");
-var defaults = __webpack_require__(/*! ./defaults */ "./lib/defaults.js");
+var utils = __webpack_require__(/*! ./utils */ "./lib/utils.js")
+var bind = __webpack_require__(/*! ./helpers/bind */ "./lib/helpers/bind.js")
+var Axios = __webpack_require__(/*! ./core/Axios */ "./lib/core/Axios.js")
+var mergeConfig = __webpack_require__(/*! ./core/mergeConfig */ "./lib/core/mergeConfig.js")
+var defaults = __webpack_require__(/*! ./defaults */ "./lib/defaults.js")
 /**
  * Create an instance of Axios 创建axios实例
  *
@@ -353,50 +353,49 @@ var defaults = __webpack_require__(/*! ./defaults */ "./lib/defaults.js");
  * @return {Axios} A new instance of Axios Axios的一个新实例
  */
 function createInstance(defaultConfig) {
-  console.log('createInstance');
-  var context = new Axios(defaultConfig);
-  var instance = bind(Axios.prototype.request, context);
+  var context = new Axios(defaultConfig) // 使用默认值创建axios
+  var instance = bind(Axios.prototype.request, context)
 
   // Copy axios.prototype to instance 将axios.prototype复制到实例
-  utils.extend(instance, Axios.prototype, context);
+  utils.extend(instance, Axios.prototype, context)
 
   // Copy context to instance
-  utils.extend(instance, context);
+  utils.extend(instance, context)
 
   // Factory for creating new instances
   instance.create = function create(instanceConfig) {
-    return createInstance(mergeConfig(defaultConfig, instanceConfig));
-  };
+    return createInstance(mergeConfig(defaultConfig, instanceConfig))
+  }
 
-  return instance;
+  return instance
 }
 
 // Create the default instance to be exported
-var axios = createInstance(defaults);
+var axios = createInstance(defaults)
 
 // Expose Axios class to allow class inheritance
-axios.Axios = Axios;
+axios.Axios = Axios
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ "./lib/cancel/Cancel.js");
-axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ "./lib/cancel/CancelToken.js");
-axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ "./lib/cancel/isCancel.js");
-axios.VERSION = __webpack_require__(/*! ./env/data */ "./lib/env/data.js").version;
+axios.Cancel = __webpack_require__(/*! ./cancel/Cancel */ "./lib/cancel/Cancel.js")
+axios.CancelToken = __webpack_require__(/*! ./cancel/CancelToken */ "./lib/cancel/CancelToken.js")
+axios.isCancel = __webpack_require__(/*! ./cancel/isCancel */ "./lib/cancel/isCancel.js")
+axios.VERSION = __webpack_require__(/*! ./env/data */ "./lib/env/data.js").version
 
 // Expose all/spread
 axios.all = function all(promises) {
-  return Promise.all(promises);
-};
-axios.spread = __webpack_require__(/*! ./helpers/spread */ "./lib/helpers/spread.js");
+  return Promise.all(promises)
+}
+axios.spread = __webpack_require__(/*! ./helpers/spread */ "./lib/helpers/spread.js")
 
 // Expose isAxiosError
-axios.isAxiosError = __webpack_require__(/*! ./helpers/isAxiosError */ "./lib/helpers/isAxiosError.js");
+axios.isAxiosError = __webpack_require__(/*! ./helpers/isAxiosError */ "./lib/helpers/isAxiosError.js")
 
-module.exports = axios;
+module.exports = axios
 
 // Allow use of default import syntax in TypeScript
 //允许在TypeScript中使用默认导入语法
-module.exports.default = axios;
+module.exports.default = axios
 
 
 /***/ }),
@@ -599,7 +598,7 @@ var validator = __webpack_require__(/*! ../helpers/validator */ "./lib/helpers/v
 
 var validators = validator.validators;
 /**
- * Create a new instance of Axios
+ * Create a new instance of Axios*创建Axios的新实例
  *
  * @param {Object} instanceConfig The default config for the instance
  */
@@ -617,6 +616,7 @@ function Axios(instanceConfig) {
  * @param {Object} config The config specific for this request (merged with this.defaults)
  */
 Axios.prototype.request = function request(config) {
+  console.log('Axios.prototype.request');
   /*eslint no-param-reassign:0*/
   // Allow for axios('example/url'[, config]) a la fetch API
   if (typeof config === 'string') {
@@ -708,7 +708,10 @@ Axios.prototype.request = function request(config) {
 };
 
 Axios.prototype.getUri = function getUri(config) {
+  console.log('config',config);
+  debugger
   config = mergeConfig(this.defaults, config);
+  console.log('config2',config);
   return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
 };
 
@@ -758,11 +761,11 @@ function InterceptorManager() {
 
 /**
  * Add a new interceptor to the stack
- *
- * @param {Function} fulfilled The function to handle `then` for a `Promise`
+ * 向堆栈中添加新的拦截器
+
+ * @param {Function} fulfilled 处理`Promise`的`then`的函数`
  * @param {Function} rejected The function to handle `reject` for a `Promise`
- *
- * @return {Number} An ID used to remove interceptor later
+ * @return {Number} 用于以后删除拦截器的ID
  */
 InterceptorManager.prototype.use = function use(fulfilled, rejected, options) {
   this.handlers.push({
@@ -1410,12 +1413,13 @@ function encode(val) {
 
 /**
  * Build a URL by appending params to the end
- *
+ * 通过在末尾附加参数来构建URL
  * @param {string} url The base of the url (e.g., http://www.google.com)
- * @param {object} [params] The params to be appended
- * @returns {string} The formatted url
+ * @param {object} [params] The params to be appended 要附加的参数
+ * @returns {string} The formatted url 格式化的url
  */
 module.exports = function buildURL(url, params, paramsSerializer) {
+  console.log('buildURL',arguments);
   /*eslint no-param-reassign:0*/
   if (!params) {
     return url;
@@ -1594,7 +1598,12 @@ module.exports = function isAbsoluteURL(url) {
 
 "use strict";
 
-
+/**
+*确定有效负载是否为Axios引发的错误
+*
+*@param{*}加载要测试的值
+*@如果有效负载是Axios抛出的错误，则返回{boolean}True，否则返回false
+*/
 /**
  * Determines whether the payload is an error thrown by Axios
  *

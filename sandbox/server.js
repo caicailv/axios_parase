@@ -27,14 +27,13 @@ server = http.createServer(function (req, res) {
 
   if (pathname === '/index.html') {
     pipeFileToResponse(res, './client.html')
-  } 
-  else if (pathname === '/require.js') {
+  } else if (pathname === '/b.html') {
+    pipeFileToResponse(res, './b.html')
+  } else if (pathname === '/require.js') {
     pipeFileToResponse(res, './require.js', 'text/javascript')
-  }
-  else if (pathname === '/axios.js') {
+  } else if (pathname === '/axios.js') {
     pipeFileToResponse(res, '../dist/axios.js', 'text/javascript')
-  }
-   else if (pathname === '/axios2.js') {
+  } else if (pathname === '/axios2.js') {
     pipeFileToResponse(res, '../lib/axios.js', 'text/javascript')
   } else if (pathname === '/axios.map') {
     pipeFileToResponse(res, '../dist/axios.map', 'text/javascript')
@@ -77,7 +76,7 @@ server = http.createServer(function (req, res) {
 
 const PORT = 3000
 
-server.listen(PORT, console.log(`Listening on localhost:${PORT}...`))
+server.listen(PORT, console.log(`Listening on \nhttp://localhost:${PORT}`))
 server.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
     console.log(
