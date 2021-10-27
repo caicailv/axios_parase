@@ -682,10 +682,8 @@ Axios.prototype.request = function request(config) {
       promise = promise.then(chain.shift(), chain.shift());
       // console.log('gh',promise,config);
     }
-
     return promise;
   }
-console.log('eee');
 
   var newConfig = config;
   while (requestInterceptorChain.length) {
@@ -891,6 +889,7 @@ var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./lib/cancel/Cancel.js
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
+ * *如果已请求取消，则抛出“取消”。
  */
 function throwIfCancellationRequested(config) {
   if (config.cancelToken) {
@@ -904,17 +903,18 @@ function throwIfCancellationRequested(config) {
 
 /**
  * Dispatch a request to the server using the configured adapter.
- *
- * @param {object} config The config that is to be used for the request
- * @returns {Promise} The Promise to be fulfilled
+ **使用配置的适配器向服务器发送请求。
+
+ * @param {object} config config用于请求的配置
+ * @returns {Promise} 要实现的promise
  */
 module.exports = function dispatchRequest(config) {
-  throwIfCancellationRequested(config);
+  throwIfCancellationRequested(config); //取消请求
 
-  // Ensure headers exist
+  // Ensure headers exist   确保header存在
   config.headers = config.headers || {};
 
-  // Transform request data
+  // Transform request data 转换请求数据
   config.data = transformData.call(
     config,
     config.data,
@@ -922,7 +922,7 @@ module.exports = function dispatchRequest(config) {
     config.transformRequest
   );
 
-  // Flatten headers
+  // Flatten headers 展开headers
   config.headers = utils.merge(
     config.headers.common || {},
     config.headers[config.method] || {},
@@ -935,7 +935,7 @@ module.exports = function dispatchRequest(config) {
       delete config.headers[method];
     }
   );
-
+  console.log('  config.headers',  config.headers);
   var adapter = config.adapter || defaults.adapter;
 
   return adapter(config).then(function onAdapterResolution(response) {
@@ -1190,10 +1190,11 @@ var defaults = __webpack_require__(/*! ./../defaults */ "./lib/defaults.js");
 
 /**
  * Transform the data for a request or a response
- *
- * @param {Object|String} data The data to be transformed
- * @param {Array} headers The headers for the request or response
- * @param {Array|Function} fns A single function or Array of functions
+ * *为请求或响应转换数据
+
+ * @param {Object|String} data The data to be transformed 要转换的数据
+ * @param {Array} headers The headers for the request or response 请求或响应的headers
+ * @param {Array|Function} fns A single function or Array of functions 单个函数或函数数组
  * @returns {*} The resulting transformed data
  */
 module.exports = function transformData(data, headers, fns) {

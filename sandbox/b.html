@@ -18,24 +18,19 @@
           baseURL: '/api',
         })
         // 请求拦截
-        ax.interceptors.request.use(async (config) => {
-          console.log('request_config1', config)
-          await pTime(2000)
+        ax.interceptors.request.use((config) => {
+          // console.log('request_config1', config)
           return config
         })
-        // ax.interceptors.request.use(async (config) => {
-        //   console.log('request_config2', config)
-        //   await pTime(2000)
-        //   return config
-        // })
+
         // 响应拦截
         ax.interceptors.response.use(
           (res) => {
-            console.log('response', res)
+            // console.log('response', res)
             return res.data
           },
           (err) => {
-            console.log('response_error', err)
+            // console.log('response_error', err)
             return Promise.reject(err)
           }
         )
