@@ -14,6 +14,7 @@
       }
 
       function initAxios() {
+ 
         const ax = axios.create({
           baseURL: '/api',
         })
@@ -38,6 +39,8 @@
       }
 
       const myax = initAxios()
+      const CancelToken = axios.CancelToken
+        const source = CancelToken.source()
       myax('/ccc', {
         userId: 1,
         pid: 2,
