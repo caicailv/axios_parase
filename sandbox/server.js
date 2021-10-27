@@ -24,7 +24,7 @@ server = http.createServer(function (req, res) {
   if (pathname === '/') {
     pathname = '/index.html'
   }
-
+  console.log('pathname', pathname)
   if (pathname === '/index.html') {
     pipeFileToResponse(res, './client.html')
   } else if (pathname === '/b.html') {
@@ -37,6 +37,7 @@ server = http.createServer(function (req, res) {
     pipeFileToResponse(res, '../lib/axios.js', 'text/javascript')
   } else if (pathname === '/axios.map') {
     pipeFileToResponse(res, '../dist/axios.map', 'text/javascript')
+    // } else if (pathname.includes('/api')) {
   } else if (pathname === '/api') {
     var status
     var result

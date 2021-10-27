@@ -648,8 +648,9 @@ Axios.prototype.request = function request(config) {
   }
 
   // filter out skipped interceptors
+  //过滤掉跳过的拦截器
   var requestInterceptorChain = [];
-  var synchronousRequestInterceptors = true;
+  var synchronousRequestInterceptors = true; //控制同步逻辑开关*(暂时没搞懂这个同步是咋回事)
   this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
     if (typeof interceptor.runWhen === 'function' && interceptor.runWhen(config) === false) {
       return;
@@ -671,16 +672,20 @@ Axios.prototype.request = function request(config) {
     var chain = [dispatchRequest, undefined];
 
     Array.prototype.unshift.apply(chain, requestInterceptorChain);
+
     chain = chain.concat(responseInterceptorChain);
+    // 到此为止,构造了一个请求拦截器+请求本身+undifined+响应拦截器的数组 chain
+
 
     promise = Promise.resolve(config);
     while (chain.length) {
       promise = promise.then(chain.shift(), chain.shift());
+      // console.log('gh',promise,config);
     }
 
     return promise;
   }
-
+console.log('eee');
 
   var newConfig = config;
   while (requestInterceptorChain.length) {
@@ -708,14 +713,12 @@ Axios.prototype.request = function request(config) {
 };
 
 Axios.prototype.getUri = function getUri(config) {
-  console.log('config',config);
-  debugger
   config = mergeConfig(this.defaults, config);
-  console.log('config2',config);
   return buildURL(config.url, config.params, config.paramsSerializer).replace(/^\?/, '');
 };
 
 // Provide aliases for supported request methods
+// 为支持的请求方法提供别名
 utils.forEach(['delete', 'get', 'head', 'options'], function forEachMethodNoData(method) {
   /*eslint func-names:0*/
   Axios.prototype[method] = function(url, config) {
@@ -762,7 +765,6 @@ function InterceptorManager() {
 /**
  * Add a new interceptor to the stack
  * 向堆栈中添加新的拦截器
-
  * @param {Function} fulfilled 处理`Promise`的`then`的函数`
  * @param {Function} rejected The function to handle `reject` for a `Promise`
  * @return {Number} 用于以后删除拦截器的ID
@@ -1419,7 +1421,6 @@ function encode(val) {
  * @returns {string} The formatted url 格式化的url
  */
 module.exports = function buildURL(url, params, paramsSerializer) {
-  console.log('buildURL',arguments);
   /*eslint no-param-reassign:0*/
   if (!params) {
     return url;

@@ -7,16 +7,52 @@
   <body>
     <script src="/axios.js"></script>
     <script>
-      const ax = axios.create({
-        baseURL: '/api',
+      function pTime(time = 1000) {
+        return new Promise((resolve, reject) => {
+          setTimeout(resolve, time)
+        })
+      }
+
+      function initAxios() {
+        const ax = axios.create({
+          baseURL: '/api',
+        })
+        // 请求拦截
+        ax.interceptors.request.use(async (config) => {
+          console.log('request_config1', config)
+          await pTime(2000)
+          return config
+        })
+        // ax.interceptors.request.use(async (config) => {
+        //   console.log('request_config2', config)
+        //   await pTime(2000)
+        //   return config
+        // })
+        // 响应拦截
+        ax.interceptors.response.use(
+          (res) => {
+            console.log('response', res)
+            return res.data
+          },
+          (err) => {
+            console.log('response_error', err)
+            return Promise.reject(err)
+          }
+        )
+        return ax
+      }
+
+      const myax = initAxios()
+      myax('/ccc', {
+        userId: 1,
+        pid: 2,
       })
-      // 请求拦截
-      ax.interceptors.request.use(
-        (res) => {
-          
-        },
-        (err) => {}
-      )
+        .then((res) => {
+          console.log('then', res)
+        })
+        .catch((err) => {
+          console.log('catch_err_', err)
+        })
     </script>
   </body>
 </html>
