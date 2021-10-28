@@ -37,6 +37,19 @@
         )
         return ax
       }
+      const CancelToken = axios.CancelToken
+      const source = CancelToken.source()
+      const myax = initAxios()
+      myax.post(
+        '/ccc',
+        {
+          userId: 1,
+          pid: 2,
+        },
+        {
+          cancelToken: source.token,
+        }
+      )
 
       const myax = initAxios()
       const CancelToken = axios.CancelToken
@@ -49,8 +62,10 @@
           console.log('then', res)
         })
         .catch((err) => {
-          console.log('catch_err_', err)
+          console.error('catch_err_', err)
         })
+      // source.cancel('成功取消了请求')
+      console.log('catch_err_', err)
     </script>
   </body>
 </html>

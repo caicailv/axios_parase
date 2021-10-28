@@ -37,6 +37,8 @@ server = http.createServer(function (req, res) {
     pipeFileToResponse(res, '../lib/axios.js', 'text/javascript')
   } else if (pathname === '/axios.map') {
     pipeFileToResponse(res, '../dist/axios.map', 'text/javascript')
+    } else if (pathname.includes('/api')) {
+  // } else if (pathname === '/api') {
     // } else if (pathname.includes('/api')) {
   } else if (pathname === '/api') {
     var status
