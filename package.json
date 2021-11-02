@@ -1,6 +1,6 @@
 {
   "name": "axios_parase",
-  "version": "0.23.0",
+  "version": "0.24.0",
   "description": "",
   "main": "index.js",
   "types": "index.d.ts",
@@ -12,7 +12,6 @@
     "version": "npm run build && git add -A dist && git add CHANGELOG.md bower.json package.json",
     "postversion": "git push && git push --tags",
     "examples": "node ./examples/server.js",
-    "coveralls": "cat coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "fix": "eslint --fix lib/**/*.js"
   },
   "repository": {

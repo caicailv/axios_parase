@@ -14,7 +14,6 @@
       }
 
       function initAxios() {
- 
         const ax = axios.create({
           baseURL: '/api',
         })
@@ -37,23 +36,9 @@
         )
         return ax
       }
-      const CancelToken = axios.CancelToken
+      const myax = initAxios()
+      const CancelToken = axios.CancelToken()
       const source = CancelToken.source()
-      const myax = initAxios()
-      myax.post(
-        '/ccc',
-        {
-          userId: 1,
-          pid: 2,
-        },
-        {
-          cancelToken: source.token, 
-        }
-      )
-
-      const myax = initAxios()
-      const CancelToken = axios.CancelToken
-        const source = CancelToken.source()
       myax('/ccc', {
         userId: 1,
         pid: 2,
@@ -65,7 +50,6 @@
           console.error('catch_err_', err)
         })
       // source.cancel('成功取消了请求')
-      console.log('catch_err_', err)
     </script>
   </body>
 </html>
