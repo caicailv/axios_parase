@@ -412,7 +412,7 @@ module.exports.default = axios
 
 /**
  * A `Cancel` is an object that is thrown when an operation is canceled.
- *
+ **“Cancel”是在取消操作时抛出的对象。
  * @class
  * @param {string=} message The message.
  */
@@ -445,9 +445,10 @@ var Cancel = __webpack_require__(/*! ./Cancel */ "./lib/cancel/Cancel.js");
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
+ * *“CancelToken”是可用于请求取消操作的对象。
  *
  * @class
- * @param {Function} executor The executor function.
+ * @param {Function} executor The executor   function.
  */
 function CancelToken(executor) {
   if (typeof executor !== 'function') {
@@ -504,6 +505,7 @@ function CancelToken(executor) {
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
+ * * 如果已请求取消，则抛出“取消”。
  */
 CancelToken.prototype.throwIfRequested = function throwIfRequested() {
   if (this.reason) {
@@ -616,7 +618,6 @@ function Axios(instanceConfig) {
  * @param {Object} config The config specific for this request (merged with this.defaults)
  */
 Axios.prototype.request = function request(config) {
-  console.log('Axios.prototype.request');
   /*eslint no-param-reassign:0*/
   // Allow for axios('example/url'[, config]) a la fetch API
   if (typeof config === 'string') {
@@ -881,11 +882,11 @@ module.exports = function createError(message, config, code, request, response) 
 "use strict";
 
 
-var utils = __webpack_require__(/*! ./../utils */ "./lib/utils.js");
-var transformData = __webpack_require__(/*! ./transformData */ "./lib/core/transformData.js");
-var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./lib/cancel/isCancel.js");
-var defaults = __webpack_require__(/*! ../defaults */ "./lib/defaults.js");
-var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./lib/cancel/Cancel.js");
+var utils = __webpack_require__(/*! ./../utils */ "./lib/utils.js")
+var transformData = __webpack_require__(/*! ./transformData */ "./lib/core/transformData.js")
+var isCancel = __webpack_require__(/*! ../cancel/isCancel */ "./lib/cancel/isCancel.js")
+var defaults = __webpack_require__(/*! ../defaults */ "./lib/defaults.js")
+var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./lib/cancel/Cancel.js")
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -893,6 +894,11 @@ var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./lib/cancel/Cancel.js
  */
 function throwIfCancellationRequested(config) {
   if (config.cancelToken) {
+    config.cancelToken.throwIfRequested()
+  }
+
+  if (config.signal && config.signal.aborted) {
+    throw new Cancel('canceled')
     config.cancelToken.throwIfRequested();
   }
 
@@ -909,10 +915,10 @@ function throwIfCancellationRequested(config) {
  * @returns {Promise} 要实现的promise
  */
 module.exports = function dispatchRequest(config) {
-  throwIfCancellationRequested(config); //取消请求
+  throwIfCancellationRequested(config)
 
   // Ensure headers exist   确保header存在
-  config.headers = config.headers || {};
+  config.headers = config.headers || {}
 
   // Transform request data 转换请求数据
   config.data = transformData.call(
@@ -920,54 +926,57 @@ module.exports = function dispatchRequest(config) {
     config.data,
     config.headers,
     config.transformRequest
-  );
+  )
 
   // Flatten headers 展开headers
   config.headers = utils.merge(
     config.headers.common || {},
     config.headers[config.method] || {},
     config.headers
-  );
-
+  )
+  // 清理headers
   utils.forEach(
     ['delete', 'get', 'head', 'post', 'put', 'patch', 'common'],
     function cleanHeaderConfig(method) {
-      delete config.headers[method];
+      delete config.headers[method]
     }
-  );
-  console.log('  config.headers',  config.headers);
-  var adapter = config.adapter || defaults.adapter;
-
-  return adapter(config).then(function onAdapterResolution(response) {
-    throwIfCancellationRequested(config);
-
-    // Transform response data
-    response.data = transformData.call(
-      config,
-      response.data,
-      response.headers,
-      config.transformResponse
-    );
-
-    return response;
-  }, function onAdapterRejection(reason) {
-    if (!isCancel(reason)) {
-      throwIfCancellationRequested(config);
+  )
+  var adapter = config.adapter || defaults.adapter
+  // 适配器 指的是在不同的环境 用不同的底层方法去请求, node-> http模块, 网页 xhr模块
+  return adapter(config).then(
+    function onAdapterResolution(response) {
+      // 因为此处每一步都可能收到取消请求的emit 所以异步操作前要先看请求是否取消了
+      throwIfCancellationRequested(config)
 
       // Transform response data
-      if (reason && reason.response) {
-        reason.response.data = transformData.call(
-          config,
-          reason.response.data,
-          reason.response.headers,
-          config.transformResponse
-        );
-      }
-    }
+      response.data = transformData.call(
+        config,
+        response.data,
+        response.headers,
+        config.transformResponse
+      )
 
-    return Promise.reject(reason);
-  });
-};
+      return response
+    },
+    function onAdapterRejection(reason) {
+      if (!isCancel(reason)) {
+        throwIfCancellationRequested(config)
+
+        // Transform response data
+        if (reason && reason.response) {
+          reason.response.data = transformData.call(
+            config,
+            reason.response.data,
+            reason.response.headers,
+            config.transformResponse
+          )
+        }
+      }
+
+      return Promise.reject(reason)
+    }
+  )
+}
 
 
 /***/ }),
@@ -1042,6 +1051,8 @@ var utils = __webpack_require__(/*! ../utils */ "./lib/utils.js");
 /**
  * Config-specific merge-function which creates a new config-object
  * by merging two configuration objects together.
+ *  * Config-specific merge-function which creates a new config-object
+ *  by merging two configuration objects together.
  *
  * @param {Object} config1
  * @param {Object} config2
@@ -1234,6 +1245,7 @@ function setContentTypeIfUnset(headers, value) {
   }
 }
 
+//判断环境 之后决定使用xhr或者http来发起请求
 function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
@@ -2200,7 +2212,14 @@ function forEach(obj, fn) {
  * the arguments list will take precedence.
  *
  * Example:
- *
+ **接受希望每个参数都是对象的varargs，然后
+  *不可变地合并每个对象的属性并返回结果。
+  *
+  *当多个对象包含同一个键时，中的后一个对象
+  *参数列表将优先。
+  *
+  *例如：
+  *
  * ```js
  * var result = merge({foo: 123}, {foo: 456});
  * console.log(result.foo); // outputs 456

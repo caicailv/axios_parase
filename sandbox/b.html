@@ -37,7 +37,10 @@
         return ax
       }
       const myax = initAxios()
-      const CancelToken = axios.CancelToken()
+      const CancelToken = axios.CancelToken(()=>{
+        console.log('cancel_callback')
+      })
+      console.log('CancelToken.source',CancelToken.source)
       const source = CancelToken.source()
       myax('/ccc', {
         userId: 1,
@@ -49,7 +52,7 @@
         .catch((err) => {
           console.error('catch_err_', err)
         })
-      // source.cancel('成功取消了请求')
+      source.cancel('成功取消了请求')
     </script>
   </body>
 </html>
