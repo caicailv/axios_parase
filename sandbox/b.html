@@ -48,7 +48,10 @@
         .catch((err) => {
           console.error('catch_err_', err)
         })
-      source.cancel('成功取消了请求')
+        setTimeout(() => {
+          source.cancel('成功取消了请求')
+          
+        }, 0);
     </script>
   </body>
 </html>

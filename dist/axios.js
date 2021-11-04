@@ -129,6 +129,7 @@ var defaults = __webpack_require__(/*! ../defaults */ "./lib/defaults.js");
 var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./lib/cancel/Cancel.js");
 
 module.exports = function xhrAdapter(config) {
+  console.log("config",config)
   return new Promise(function dispatchXhrRequest(resolve, reject) {
     var requestData = config.data;
     var requestHeaders = config.headers;
@@ -491,11 +492,16 @@ function CancelToken(executor) {
 
     return promise;
   };
+  /* 
+  执行传入的函数,
+  把取消函数传出去 source里的cancel最后就是被赋值成该函数,
+  当调用cancel时,实例化一个Cancel对象
   
-  // 执行传入的函数
+  */
   executor(function cancel(message) {
     if (token.reason) {
       // Cancellation has already been requested
+      //已请求取消
       return;
     }
 
@@ -515,7 +521,7 @@ CancelToken.prototype.throwIfRequested = function throwIfRequested() {
 };
 
 /**
- * Subscribe to the cancel signal
+ * Subscribe to the cancel signal*订阅取消信号
  */
 
 CancelToken.prototype.subscribe = function subscribe(listener) {
@@ -532,7 +538,7 @@ CancelToken.prototype.subscribe = function subscribe(listener) {
 };
 
 /**
- * Unsubscribe from the cancel signal
+ * Unsubscribe from the cancel signal*取消订阅取消信号
  */
 
 CancelToken.prototype.unsubscribe = function unsubscribe(listener) {
