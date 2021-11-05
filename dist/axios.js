@@ -127,31 +127,32 @@ var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ ".
 var createError = __webpack_require__(/*! ../core/createError */ "./lib/core/createError.js");
 var defaults = __webpack_require__(/*! ../defaults */ "./lib/defaults.js");
 var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./lib/cancel/Cancel.js");
-
+console.log('ggg');
+window.cookies =cookies 
 module.exports = function xhrAdapter(config) {
-  console.log("config",config)
   return new Promise(function dispatchXhrRequest(resolve, reject) {
     var requestData = config.data;
     var requestHeaders = config.headers;
     var responseType = config.responseType;
     var onCanceled;
+    // 完成请求后, 删掉取消请求相关的监听事件
     function done() {
       if (config.cancelToken) {
         config.cancelToken.unsubscribe(onCanceled);
       }
-
       if (config.signal) {
         config.signal.removeEventListener('abort', onCanceled);
       }
     }
 
     if (utils.isFormData(requestData)) {
-      delete requestHeaders['Content-Type']; // Let the browser set it
+      delete requestHeaders['Content-Type']; // Let the browser set it 让浏览器设置它
     }
 
     var request = new XMLHttpRequest();
 
     // HTTP basic authentication
+    // HTTP基本身份验证
     if (config.auth) {
       var username = config.auth.username || '';
       var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : '';
@@ -207,15 +208,22 @@ module.exports = function xhrAdapter(config) {
         // handled by onerror instead
         // With one exception: request that using file: protocol, most browsers
         // will return status as 0 even though it's a successful request
+
+        // 请求出错，我们没有得到响应，这将是
+        // 由onerror处理
+        // 除了一个例外：大多数浏览器使用file:protocol请求
+        // 即使请求成功，仍将返回状态为0
         if (request.status === 0 && !(request.responseURL && request.responseURL.indexOf('file:') === 0)) {
           return;
         }
         // readystate handler is calling before onerror or ontimeout handlers,
         // so we should call onloadend on the next 'tick'
+        // readystate处理程序在onerror或ontimeout处理程序之前调用，
+        // 所以我们应该在下一个“滴答声”时调用onloadend
         setTimeout(onloadend);
       };
     }
-
+    // 处理浏览器请求取消（与手动取消相反）
     // Handle browser request cancellation (as opposed to a manual cancellation)
     request.onabort = function handleAbort() {
       if (!request) {
@@ -223,7 +231,6 @@ module.exports = function xhrAdapter(config) {
       }
 
       reject(createError('Request aborted', config, 'ECONNABORTED', request));
-
       // Clean up request
       request = null;
     };
@@ -232,10 +239,10 @@ module.exports = function xhrAdapter(config) {
     request.onerror = function handleError() {
       // Real errors are hidden from us by the browser
       // onerror should only fire if it's a network error
+      // 浏览器对我们隐藏了真正的错误
+      // onerror只应在网络错误时触发
       reject(createError('Network Error', config, null, request));
-
-      // Clean up request
-      request = null;
+      request = null;//清理请求
     };
 
     // Handle timeout
@@ -258,6 +265,11 @@ module.exports = function xhrAdapter(config) {
     // Add xsrf header
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
+
+
+    //添加xsrf头
+    //只有在标准浏览器环境中运行时才能执行此操作。
+    //特别是如果我们是网络工作者，或者是本地人。
     if (utils.isStandardBrowserEnv()) {
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ?
@@ -1005,7 +1017,7 @@ module.exports = function dispatchRequest(config) {
 
 /**
  * Update an Error with the specified config, error code, and response.
- *
+ **使用指定的配置、错误代码和响应更新错误。
  * @param {Error} error The error to update.
  * @param {Object} config The config.
  * @param {string} [code] The error code (for example, 'ECONNABORTED').
@@ -1179,6 +1191,10 @@ var createError = __webpack_require__(/*! ./createError */ "./lib/core/createErr
  * @param {Function} resolve A function that resolves the promise.
  * @param {Function} reject A function that rejects the promise.
  * @param {object} response The response.
+ * 根据响应状态解决或拒绝承诺。
+  * @param{Function}解析解析承诺的函数。
+  * @param{Function}拒绝拒绝承诺的函数。
+  * @param{object}响应响应。
  */
 module.exports = function settle(resolve, reject, response) {
   var validateStatus = response.config.validateStatus;
@@ -1540,6 +1556,7 @@ module.exports = (
   utils.isStandardBrowserEnv() ?
 
   // Standard browser envs support document.cookie
+  // 标准浏览器环境支持document.cookie
     (function standardBrowserEnv() {
       return {
         write: function write(name, value, expires, path, domain, secure) {
@@ -1660,6 +1677,8 @@ module.exports = (
 
   // Standard browser envs have full support of the APIs needed to test
   // whether the request URL is of the same origin as current location.
+  // 标准浏览器环境完全支持测试所需的API
+  // 请求URL是否与当前位置的来源相同。
     (function standardBrowserEnv() {
       var msie = /(msie|trident)/i.test(navigator.userAgent);
       var urlParsingNode = document.createElement('a');
@@ -1667,6 +1686,7 @@ module.exports = (
 
       /**
     * Parse a URL to discover it's components
+    * *解析URL以发现其组件
     *
     * @param {String} url The URL to be parsed
     * @returns {Object}
@@ -1676,6 +1696,7 @@ module.exports = (
 
         if (msie) {
         // IE needs attribute set twice to normalize properties
+        //IE需要设置两次属性以规范化属性
           urlParsingNode.setAttribute('href', href);
           href = urlParsingNode.href;
         }
@@ -2164,6 +2185,18 @@ function trim(str) {
  *  navigator.product -> 'ReactNative'
  * nativescript
  *  navigator.product -> 'NativeScript' or 'NS'
+ * *确定我们是否在标准浏览器环境中运行
+ * 这允许axios在web worker中运行，并以本机方式进行响应。
+ * 这两种环境都支持XMLHttpRequest，但不完全支持标准的globals。
+ * 
+ * 网络工作者：
+ * 窗口类型->未定义
+ * 文档类型->未定义
+ * 
+ * 反应本机：
+ * navigator.product->“ReactNative”
+ * nativescript
+ * navigator.product->“NativeScript”或“NS”
  */
 function isStandardBrowserEnv() {
   if (

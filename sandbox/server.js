@@ -16,6 +16,7 @@ function pipeFileToResponse(res, file, type) {
 
 server = http.createServer(function (req, res) {
   req.setEncoding('utf8')
+  res.setHeader('Access-Control-Allow-Origin', '*')
 
   var parsed = url.parse(req.url, true)
   var pathname = parsed.pathname
@@ -29,6 +30,8 @@ server = http.createServer(function (req, res) {
     pipeFileToResponse(res, './client.html')
   } else if (pathname === '/b.html') {
     pipeFileToResponse(res, './b.html')
+  } else if (pathname === '/c.html') {
+    pipeFileToResponse(res, './c.html')
   } else if (pathname === '/require.js') {
     pipeFileToResponse(res, './require.js', 'text/javascript')
   } else if (pathname === '/axios.js') {
@@ -37,8 +40,8 @@ server = http.createServer(function (req, res) {
     pipeFileToResponse(res, '../lib/axios.js', 'text/javascript')
   } else if (pathname === '/axios.map') {
     pipeFileToResponse(res, '../dist/axios.map', 'text/javascript')
-    } else if (pathname.includes('/api')) {
-  // } else if (pathname === '/api') {
+  } else if (pathname.includes('/api')) {
+    // } else if (pathname === '/api') {
     var status
     var result
     var data = ''
@@ -77,7 +80,12 @@ server = http.createServer(function (req, res) {
 
 const PORT = 3000
 
-server.listen(PORT, console.log(`Listening on \n http://localhost:${PORT} \n http://localhost:${PORT}/b.html`))
+server.listen(
+  PORT,
+  console.log(
+    `Listening on \n http://localhost:${PORT} \n http://localhost:${PORT}/b.html \n http://localhost:${PORT}/c.html`
+  )
+)
 server.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
     console.log(

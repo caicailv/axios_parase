@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Title</title>
+    <!-- <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script> -->
+  </head>
+  <body>
+    <div id="file-list-display"></div>
+  </body>
+  <script>
+    const xhr = new XMLHttpRequest()
+    xhr.onreadystatechange = function () {
+      console.log('this', this)
+    }
+    xhr.open('GET', '/api/xhr', true)
+  
+    xhr.setRequestHeader('Content-type', 'application/json')
+    xhr.send()
+  </script>
+</html>
