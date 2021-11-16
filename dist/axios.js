@@ -127,7 +127,6 @@ var isURLSameOrigin = __webpack_require__(/*! ./../helpers/isURLSameOrigin */ ".
 var createError = __webpack_require__(/*! ../core/createError */ "./lib/core/createError.js");
 var defaults = __webpack_require__(/*! ../defaults */ "./lib/defaults.js");
 var Cancel = __webpack_require__(/*! ../cancel/Cancel */ "./lib/cancel/Cancel.js");
-console.log('ggg');
 window.cookies =cookies 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
