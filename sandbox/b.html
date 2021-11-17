@@ -7,51 +7,66 @@
   <body>
     <script src="/axios.js"></script>
     <script>
-      function pTime(time = 1000) {
-        return new Promise((resolve, reject) => {
-          setTimeout(resolve, time)
-        })
-      }
+      // function pTime(time = 1000) {
+      //   return new Promise((resolve, reject) => {
+      //     setTimeout(resolve, time)
+      //   })
+      // }
 
-      function initAxios() {
-        const ax = axios.create({
-          baseURL: '/api',
-        })
-        // 请求拦截
-        ax.interceptors.request.use((config) => {
-          // console.log('request_config1', config)
-          return config
-        })
+      // function initAxios() {
+      //   const ax = axios.create({
+      //     baseURL: '/api',
+      //   })
+      //   // 请求拦截
+      //   ax.interceptors.request.use((config) => {
+      //     // console.log('request_config1', config)
+      //     return config
+      //   })
 
-        // 响应拦截
-        ax.interceptors.response.use(
-          (res) => {
-            return res.data
+      //   // 响应拦截
+      //   ax.interceptors.response.use(
+      //     (res) => {
+      //       return res.data
+      //     },
+      //     (err) => {
+      //       return Promise.reject(err)
+      //     }
+      //   )
+      //   return ax
+      // }
+      // const myax = initAxios()
+      // const CancelToken = axios.CancelToken
+      // const source = CancelToken.source()
+      // myax('/ccc', {
+      //   userId: 1,
+      //   pid: 2,
+      //   cancelToken: source.token
+      // })
+      //   .then((res) => {
+      //     console.log('then', res)
+      //   })
+      //   .catch((err) => {
+      //     console.error('catch_err_', err)
+      //   })
+      //   setTimeout(() => {
+      //     source.cancel('成功取消了请求')
+      //   }, 0);
+      axios
+        .post('/api', {
+          ccc: 'ddd',
+          gg: {
+            bb: 'ccc',
           },
-          (err) => {
-            return Promise.reject(err)
+          params:{
+            ' ??':' b b'
           }
-        )
-        return ax
-      }
-      const myax = initAxios()
-      const CancelToken = axios.CancelToken
-      const source = CancelToken.source()
-      myax('/ccc', {
-        userId: 1,
-        pid: 2,
-        cancelToken: source.token
-      })
+        })
         .then((res) => {
-          console.log('then', res)
+          console.log('res', res)
         })
         .catch((err) => {
-          console.error('catch_err_', err)
+          console.log('err', err)
         })
-        setTimeout(() => {
-          source.cancel('成功取消了请求')
-          
-        }, 0);
     </script>
   </body>
 </html>

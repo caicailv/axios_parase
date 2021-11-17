@@ -21,11 +21,11 @@ server = http.createServer(function (req, res) {
   var parsed = url.parse(req.url, true)
   var pathname = parsed.pathname
 
-  console.log('[' + new Date() + ']', req.method, pathname)
+  // console.log('[' + new Date() + ']', req.method, pathname)
   if (pathname === '/') {
     pathname = '/index.html'
   }
-  console.log('pathname', pathname)
+  // console.log('pathname', pathname)
   if (pathname === '/index.html') {
     pipeFileToResponse(res, './client.html')
   } else if (pathname === '/b.html') {
@@ -78,7 +78,7 @@ server = http.createServer(function (req, res) {
   }
 })
 
-const PORT = 3000
+const PORT = 3002
 
 server.listen(
   PORT,

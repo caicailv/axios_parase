@@ -159,6 +159,7 @@ module.exports = function xhrAdapter(config) {
     }
 
     var fullPath = buildFullPath(config.baseURL, config.url);
+    console.log('config',config);
     request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
 
     // Set the request timeout in MS
@@ -280,7 +281,7 @@ module.exports = function xhrAdapter(config) {
       }
     }
 
-    // Add headers to the request
+    // Add headers to the request     
     if ('setRequestHeader' in request) {
       utils.forEach(requestHeaders, function setRequestHeader(val, key) {
         if (typeof requestData === 'undefined' && key.toLowerCase() === 'content-type') {
@@ -304,11 +305,13 @@ module.exports = function xhrAdapter(config) {
     }
 
     // Handle progress if needed
+    // 如果需要，处理进度
     if (typeof config.onDownloadProgress === 'function') {
       request.addEventListener('progress', config.onDownloadProgress);
     }
 
     // Not all browsers support upload events
+    // 并非所有浏览器都支持上载事件
     if (typeof config.onUploadProgress === 'function' && request.upload) {
       request.upload.addEventListener('progress', config.onUploadProgress);
     }
@@ -938,6 +941,7 @@ function throwIfCancellationRequested(config) {
  * @returns {Promise} 要实现的promise
  */
 module.exports = function dispatchRequest(config) {
+  console.log('dispatchRequest',config);
   throwIfCancellationRequested(config)
 
   // Ensure headers exist   确保header存在
@@ -1239,7 +1243,9 @@ module.exports = function transformData(data, headers, fns) {
   var context = this || defaults;
   /*eslint no-param-reassign:0*/
   utils.forEach(fns, function transform(fn) {
+    console.log('data before',data);
     data = fn.call(context, data, headers);
+    console.log('data after',data);
   });
 
   return data;
@@ -1441,16 +1447,16 @@ module.exports = function bind(fn, thisArg) {
 "use strict";
 
 
-var utils = __webpack_require__(/*! ./../utils */ "./lib/utils.js");
+var utils = __webpack_require__(/*! ./../utils */ "./lib/utils.js")
 
 function encode(val) {
-  return encodeURIComponent(val).
-    replace(/%3A/gi, ':').
-    replace(/%24/g, '$').
-    replace(/%2C/gi, ',').
-    replace(/%20/g, '+').
-    replace(/%5B/gi, '[').
-    replace(/%5D/gi, ']');
+  return encodeURIComponent(val)
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+')
+    .replace(/%5B/gi, '[')
+    .replace(/%5D/gi, ']')
 }
 
 /**
@@ -1462,53 +1468,54 @@ function encode(val) {
  */
 module.exports = function buildURL(url, params, paramsSerializer) {
   /*eslint no-param-reassign:0*/
+  console.log('buildURL->A')
   if (!params) {
-    return url;
+    return url
   }
 
-  var serializedParams;
+  var serializedParams
   if (paramsSerializer) {
-    serializedParams = paramsSerializer(params);
+    serializedParams = paramsSerializer(params)
   } else if (utils.isURLSearchParams(params)) {
-    serializedParams = params.toString();
+    serializedParams = params.toString()
   } else {
-    var parts = [];
+    var parts = []
 
     utils.forEach(params, function serialize(val, key) {
       if (val === null || typeof val === 'undefined') {
-        return;
+        return
       }
 
       if (utils.isArray(val)) {
-        key = key + '[]';
+        key = key + '[]'
       } else {
-        val = [val];
+        val = [val]
       }
 
       utils.forEach(val, function parseValue(v) {
         if (utils.isDate(v)) {
-          v = v.toISOString();
+          v = v.toISOString()
         } else if (utils.isObject(v)) {
-          v = JSON.stringify(v);
+          v = JSON.stringify(v)
         }
-        parts.push(encode(key) + '=' + encode(v));
-      });
-    });
+        parts.push(encode(key) + '=' + encode(v))
+      })
+    })
 
-    serializedParams = parts.join('&');
+    serializedParams = parts.join('&')
   }
 
   if (serializedParams) {
-    var hashmarkIndex = url.indexOf('#');
+    var hashmarkIndex = url.indexOf('#')
     if (hashmarkIndex !== -1) {
-      url = url.slice(0, hashmarkIndex);
+      url = url.slice(0, hashmarkIndex)
     }
 
-    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams
   }
-
-  return url;
-};
+  console.log('buildURL', url)
+  return url
+}
 
 
 /***/ }),
